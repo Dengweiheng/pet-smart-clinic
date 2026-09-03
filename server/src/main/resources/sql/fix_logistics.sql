@@ -1,0 +1,11 @@
+USE pet_medical_mall;
+DROP TABLE IF EXISTS logistics_record;
+CREATE TABLE logistics_record (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  order_id BIGINT NOT NULL UNIQUE,
+  company_name VARCHAR(100) NOT NULL,
+  tracking_no VARCHAR(100) NOT NULL,
+  logistics_status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_logistics_order FOREIGN KEY (order_id) REFERENCES `order`(id)
+) ENGINE=InnoDB;

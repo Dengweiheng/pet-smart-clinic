@@ -1,0 +1,93 @@
+<mxfile host="Electron" modified="2024-04-15T12:00:00.000Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.8 Chrome/114.0.5735.289 Electron/25.5.0 Safari/537.36" version="21.6.8" type="device">
+  <diagram id="usecase-v2" name="Use Case Diagram Style">
+    <mxGraphModel dx="1293" dy="1108" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- ================== ACTOR 1: USER ================== -->
+        <mxCell id="U1" value="" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="120" y="100" width="40" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="U1_LABEL" value="普通用户 (User)" style="shape=partialRectangle;whiteSpace=wrap;html=1;left=1;right=1;fillColor=none;align=center;verticalAlign=middle;strokeColor=#000000;fontStyle=0" vertex="1" parent="1">
+          <mxGeometry x="50" y="200" width="180" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="UC1_1" value="点击“猜你喜欢”浏览推荐药品" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="30" width="360" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="UC1_2" value="提交宠物病症进行AI智能问诊" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="100" width="360" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="UC1_3" value="查看已建立的宠物健康档案" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="170" width="360" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="UC1_4" value="对购买的药品进行评价和评分" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="240" width="360" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="UC1_5" value="个人账户及收货资料维护" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="310" width="360" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="L1_1" edge="1" parent="1" source="U1" target="UC1_1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="L1_2" edge="1" parent="1" source="U1" target="UC1_2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="L1_3" edge="1" parent="1" source="U1" target="UC1_3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="L1_4" edge="1" parent="1" source="U1" target="UC1_4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="L1_5" edge="1" parent="1" source="U1" target="UC1_5"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- ================== ACTOR 2: DOCTOR ================== -->
+        <mxCell id="U2" value="" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="120" y="440" width="40" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="U2_LABEL" value="宠物医生 (Doctor)" style="shape=partialRectangle;whiteSpace=wrap;html=1;left=1;right=1;fillColor=none;align=center;verticalAlign=middle;strokeColor=#000000;fontStyle=0" vertex="1" parent="1">
+          <mxGeometry x="50" y="540" width="180" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="UC2_1" value="手动录入并审核问诊意见建议" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="420" width="360" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="UC2_2" value="发布医疗科普或全校公告" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="490" width="360" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="UC2_3" value="导出问诊评价及统计报表" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="560" width="360" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="UC2_4" value="发布新药品咨询回复并选择分类" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="630" width="360" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="L2_1" edge="1" parent="1" source="U2" target="UC2_1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="L2_2" edge="1" parent="1" source="U2" target="UC2_2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="L2_3" edge="1" parent="1" source="U2" target="UC2_3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="L2_4" edge="1" parent="1" source="U2" target="UC2_4"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- ================== ACTOR 3: ADMIN ================== -->
+        <mxCell id="U3" value="" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="120" y="780" width="40" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="U3_LABEL" value="管理员 (Admin)" style="shape=partialRectangle;whiteSpace=wrap;html=1;left=1;right=1;fillColor=none;align=center;verticalAlign=middle;strokeColor=#000000;fontStyle=0" vertex="1" parent="1">
+          <mxGeometry x="50" y="880" width="180" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="UC3_1" value="全站师生账号管理与权限审核" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="530" y="720" width="360" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="UC3_2" value="维护药品与问诊层级联动分类" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="530" y="790" width="360" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="UC3_3" value="删除不当评价与违规资讯言论" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="530" y="860" width="360" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="UC3_4" value="监控可视化销售与访问数据报表" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="530" y="930" width="360" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="L3_1" edge="1" parent="1" source="U3" target="UC3_1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="L3_2" edge="1" parent="1" source="U3" target="UC3_2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="L3_3" edge="1" parent="1" source="U3" target="UC3_3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="L3_4" edge="1" parent="1" source="U3" target="UC3_4"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
