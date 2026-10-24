@@ -1,12 +1,15 @@
 package com.server.server.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.server.server.config.RabbitMqConfig;
 import com.server.server.dto.CartAddRequest;
 import com.server.server.dto.CartItemDTO;
 import com.server.server.dto.CreateOrderRequest;
 import com.server.server.entity.*;
 import com.server.server.mapper.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,6 +22,7 @@ import java.util.List;
  * <p>
  * 处理药品目录检索、购物车管理、处方药合规核验、下单扣库存、订单支付/发货/签收及物流跟踪。
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MallService {
@@ -31,6 +35,7 @@ public class MallService {
     private final PrescriptionMapper prescriptionMapper;
     private final PrescriptionItemMapper prescriptionItemMapper;
     private final LogisticsRecordMapper logisticsRecordMapper;
+    private final RabbitTemplate rabbitTemplate;
 
     /**
      * 药品列表查询（支持关键字模糊匹配与处方药/非处方药筛选）
@@ -192,6 +197,17 @@ public class MallService {
 
             // 清理购物车条目
             shoppingCartItemMapper.deleteById(cartItem.getId());
+        }
+
+        // 投递延迟消息：30 分钟内未支付则由消费者自动取消订单并回补库存
+        // MQ 不可用时只记录日志，不影响下单主流程
+        try {
+            rabbitTemplate.convertAndSend(
+                    RabbitMqConfig.ORDER_DELAY_EXCHANGE,
+                    RabbitMqConfig.ORDER_DELAY_ROUTING_KEY,
+                    order.getOrderNo());
+        } catch (Exception e) {
+            log.error("订单 {} 延迟消息投递失败，该订单不会被自动取消：{}", order.getOrderNo(), e.getMessage());
         }
 
         return order;

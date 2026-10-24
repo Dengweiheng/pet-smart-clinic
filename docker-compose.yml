@@ -1,0 +1,30 @@
+# 爱宠智诊 —— 中间件依赖
+# 仅启动 Redis 与 RabbitMQ，MySQL 使用本机已有实例，启动后端前先执行：
+#   docker compose up -d
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: pet-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: pet-rabbitmq
+    ports:
+      - "5672:5672"    # AMQP 协议端口，后端连接用
+      - "15672:15672"  # 管理台，浏览器访问 http://localhost:15672（guest/guest）
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  rabbitmq-data:

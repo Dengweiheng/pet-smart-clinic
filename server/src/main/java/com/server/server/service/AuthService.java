@@ -7,34 +7,43 @@ import com.server.server.dto.RegisterRequest;
 import com.server.server.entity.SysUser;
 import com.server.server.mapper.SysUserMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 用户认证与鉴权业务逻辑层
  * <p>
  * 处理用户登录、注册、退出登录、在线人数统计以及用户状态管理。
+ * 登录态由 Redis 统一承载：Token 使用带过期时间的 Key 存储，
+ * 在线用户使用 ZSet 统计（member 为用户 ID，score 为该用户 Token 的过期时间戳），
+ * 因此服务重启不会丢失登录态，也支持多实例部署。
  */
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
+    /**
+     * 登录 Token 键前缀，完整键为 auth:token:{token}，值为用户 ID
+     */
+    private static final String TOKEN_KEY_PREFIX = "auth:token:";
+
+    /**
+     * 在线用户 ZSet 键，member 为用户 ID，score 为 Token 过期时间戳（毫秒）
+     */
+    private static final String ONLINE_USERS_KEY = "auth:online:users";
+
+    /**
+     * Token 有效期，与 ZSet 中记录的过期时刻保持一致
+     */
+    private static final Duration TOKEN_TTL = Duration.ofMinutes(30);
+
     private final SysUserMapper sysUserMapper;
 
-    /**
-     * 内存中存储活跃用户 Token 与用户名映射（模拟会话 Session）
-     */
-    private final Map<String, String> tokenStore = new ConcurrentHashMap<>();
-
-    /**
-     * 当前在线用户计数器
-     */
-    private final AtomicInteger onlineCount = new AtomicInteger(0);
+    private final StringRedisTemplate redisTemplate;
 
     /**
      * 用户登录接口
@@ -63,10 +72,15 @@ public class AuthService {
             throw new IllegalArgumentException("用户名或密码错误");
         }
 
-        // 生成全局唯一登录 Token 并存入内存
+        // 生成全局唯一登录 Token 并写入 Redis，30 分钟后自动过期
         String token = UUID.randomUUID().toString();
-        tokenStore.put(token, user.getUsername());
-        onlineCount.incrementAndGet();
+        String userId = String.valueOf(user.getId());
+        redisTemplate.opsForValue().set(TOKEN_KEY_PREFIX + token, userId, TOKEN_TTL);
+
+        // 记录到在线用户集合：先清理已过期成员，再写入本次登录的过期时刻
+        long now = System.currentTimeMillis();
+        redisTemplate.opsForZSet().removeRangeByScore(ONLINE_USERS_KEY, 0, now);
+        redisTemplate.opsForZSet().add(ONLINE_USERS_KEY, userId, now + TOKEN_TTL.toMillis());
 
         // 组装登录结果
         LoginResponse response = new LoginResponse();
@@ -91,7 +105,7 @@ public class AuthService {
 
         SysUser user = new SysUser();
         user.setUsername(request.getUsername());
-        user.setPasswordHash(request.getPassword()); 
+        user.setPasswordHash(request.getPassword());
         user.setPhone(request.getPhone());
         user.setRole(request.getRole() == null ? "USER" : request.getRole());
         user.setStatus("ACTIVE");
@@ -105,20 +119,27 @@ public class AuthService {
      * @return 是否成功移除登录态
      */
     public boolean logout(String token) {
-        boolean removed = tokenStore.remove(token) != null;
-        if (removed && onlineCount.get() > 0) {
-            onlineCount.decrementAndGet();
+        String tokenKey = TOKEN_KEY_PREFIX + token;
+        String userId = redisTemplate.opsForValue().get(tokenKey);
+        if (userId == null) {
+            return false;
         }
-        return removed;
+        redisTemplate.delete(tokenKey);
+        redisTemplate.opsForZSet().remove(ONLINE_USERS_KEY, userId);
+        return true;
     }
 
     /**
      * 获取当前系统在线用户数量
+     * <p>
+     * 只统计 Token 尚未过期的成员，过期成员会被区间条件自动排除，无需额外清理。
      *
      * @return 在线用户人数
      */
     public int getOnlineUserCount() {
-        return onlineCount.get();
+        Long count = redisTemplate.opsForZSet()
+                .count(ONLINE_USERS_KEY, System.currentTimeMillis(), Double.MAX_VALUE);
+        return count == null ? 0 : count.intValue();
     }
 
     /**
@@ -144,4 +165,3 @@ public class AuthService {
         return sysUserMapper.updateById(user) > 0;
     }
 }
-
